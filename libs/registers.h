@@ -15,8 +15,6 @@ typedef struct{
 
 } Registers;
 
-typedef struct{
-    // bitmap looks something like this SSS or DDD equals to a binary number 111 means is A and so on....    
-} bitmap
+
 #endif
 
