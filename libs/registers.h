@@ -15,6 +15,8 @@ typedef struct{
 
 } Registers;
 
-
+typedef struct{
+  uint16_t stackpointer;
+}
 #endif
 
