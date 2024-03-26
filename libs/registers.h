@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef struct{
+typedef struct Registers{
   
     uint8_t  A;
     uint8_t  B;
@@ -15,8 +15,20 @@ typedef struct{
 
 } Registers;
 
-typedef struct{
-  uint16_t stackpointer;
-}
+typedef struct Flags{
+    uint8_t sign:1;
+    uint8_t zero:1;
+    uint8_t parity:1;
+    uint8_t carry:1;
+    uint8_t auxiliary_carry:3;
+} Flags;
+
+typedef struct State8080{
+    Registers reg;
+    Flags flag;
+    uint16_t stackpointer;
+    uint16_t programpointer;
+} State8080;
+
 #endif
 
