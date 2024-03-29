@@ -21,7 +21,11 @@ void LXI_H(State8080* state, uint8_t addr_src, uint8_t addr_dest){
 }
 
 void LXI_SP(State8080* state, uint8_t addr_src, uint8_t addr_dest){
-    state->reg.B = addr_src;
-    state->reg.C = addr_dest;
-    state->programpointer += 2; 
+    state->stackpointer = (addr_src << 8) | addr_dest;
+    state->programpointer += 2;
+}
+
+void STAX_B(State8080* state, uint16_t reg, uint8_t src_addr){
+    state->reg.B = (reg<<8) | state->reg.C;
+    state->programpointer += 2;
 }
