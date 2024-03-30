@@ -25,7 +25,12 @@ void LXI_SP(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->programpointer += 2;
 }
 
-void STAX_B(State8080* state, uint16_t reg, uint8_t src_addr){
-    state->reg.B = (reg<<8) | state->reg.C;
-    state->programpointer += 2;
+void STAX_B(State8080* state, uint8_t memoryB, uint8_t memoryC){
+    uint16_t offset = (memoryB<<8) | memoryC;
+    state->memory[offset] = state->reg.A;
+}
+
+void STAX_D(State8080* state, uint8_t memoryD, uint8_t memoryE){
+    uint16_t offset = (memoryD<<8) | memoryE;
+    state->memory[offset] = state->reg.A;
 }

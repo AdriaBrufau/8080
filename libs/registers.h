@@ -26,8 +26,9 @@ typedef struct Flags{
 typedef struct State8080{
     Registers reg;
     Flags flag;
-    uint16_t stackpointer;
-    uint16_t programpointer;
+    uint8_t stackpointer;
+    uint8_t programpointer;
+    uint8_t *memory;
 } State8080;
 
 #endif
