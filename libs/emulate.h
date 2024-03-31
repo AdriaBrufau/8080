@@ -15,4 +15,9 @@ void INX_B(State8080* state);
 void INX_D(State8080* state);
 void INX_H(State8080* state);
 void INX_SP(State8080* state);
+void INR_B(State8080* state);
+void INR_D(State8080* state);
+void INR_H(State8080* state);
+void INR_M(State8080* state);
+
 #endif

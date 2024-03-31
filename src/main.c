@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
-#include "dissasembler.c"
 
 
 int dissasembler8080(unsigned char *buff, int stackpointer){
@@ -12,10 +11,11 @@ int dissasembler8080(unsigned char *buff, int stackpointer){
     case 0x00: printf("NOP\n"); break;
     //case 0x01: printf("LXI    B,#$%02x%02x\n", code[2], code[1]); opbytes=3; break;
     case 0x02: printf("STAX   B, #%x %x\n", code[2], code[1]); opbytes=2; break;
-    case 0x03: printf("INX    B"); break;
-    case 0x04: printf("INR    B"); break;
-    case 0x05: printf("DCR    B"); break;
+    case 0x03: printf("INX    B\n"); break;
+    case 0x04: printf("INR    B\n"); break;
+    case 0x05: printf("DCR    B\n"); break;
     case 0x31: printf("LXI    SP,#$%02x %02x\n", code[2], code[1]); opbytes=3; break;
+    case 0x34: printf("INR    M, #%x %x\n", code[2], code[1]); opbytes=3; break;
   }
   return 1;
 }

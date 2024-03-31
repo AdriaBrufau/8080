@@ -50,3 +50,33 @@ void INX_H(State8080* state){
 void INX_SP(State8080* state){
     state->stackpointer++;
 }
+void INR_B(State8080* state){
+    uint8_t current_state = state->reg.B +1;
+    state->flag.zero = (current_state == 0);
+    state->flag.sign = (0x80 == (current_state & 0x80));    
+    state->flag.parity = __builtin_parity(current_state);
+    state->reg.B = current_state;
+}
+
+void INR_D(State8080* state){
+    uint8_t current_state = state->reg.D +1;
+    state->flag.zero = (current_state == 0);
+    state->flag.sign = (0x80 == (current_state & 0x80));    
+    state->flag.parity = __builtin_parity(current_state);
+    state->reg.D = current_state;
+}
+void INR_H(State8080* state){
+    uint8_t current_state = state->reg.H +1;
+    state->flag.zero = (current_state == 0);
+    state->flag.sign = (0x80 == (current_state & 0x80));    
+    state->flag.parity = __builtin_parity(current_state);
+    state->reg.D = current_state;
+}
+void INR_M(State8080* state){
+    uint8_t offset = (state->reg.H<<8) | state->reg.L;
+    state->flag.zero = (current_state == 0);
+    state->flag.sign = (0x80 == (current_state & 0x80));    
+    state->flag.parity = __builtin_parity(current_state);
+    state->memory[offset] += 1;
+}
+
