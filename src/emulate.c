@@ -50,6 +50,23 @@ void INX_H(State8080* state){
 void INX_SP(State8080* state){
     state->stackpointer++;
 }
+void INR(State8080* state, uint8_t *reg){
+    uint16_t result = (uint16_t)* reg + 1;
+    state->flag.zero = (result == 0);
+    state->flag.sign = (0x80 == (result & 0x80));    
+    state->flag.parity = __builtin_parity(result);
+    *reg = (result & 0x0ff);
+}
+
+void DCR(State8080* state, uint8_t *reg){
+    uint16_t result = (uint16_t)* reg - 1;
+    state->flag.zero = (result == 0);
+    state->flag.sign = (0x80 == (result & 0x80));    
+    state->flag.parity = __builtin_parity(result);
+    *reg = (result & 0x0ff);
+
+}
+
 void INR_B(State8080* state){
     uint8_t current_state = state->reg.B +1;
     state->flag.zero = (current_state == 0);
