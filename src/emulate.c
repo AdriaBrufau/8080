@@ -2,6 +2,28 @@
 #include <stdint.h>
 #include "registers.h"
 
+static int op_cycle[] = {
+    4, 10, 7, 5, 5, 5, 7, 4, 4, 10, 7, 5, 5, 5, 7, 4, //0x00..0x0f
+	4, 10, 7, 5, 5, 5, 7, 4, 4, 10, 7, 5, 5, 5, 7, 4, //0x10..0x1f
+	4, 10, 16, 5, 5, 5, 7, 4, 4, 10, 16, 5, 5, 5, 7, 4,
+	4, 10, 13, 5, 10, 10, 10, 4, 4, 10, 13, 5, 5, 5, 7, 4,
+
+	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5, //0x40..0x4f
+	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+	7, 7, 7, 7, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 7, 5,
+
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4, //0x80..8x4f
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+
+	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11, //0xc0..0xcf
+	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11,
+	11, 10, 10, 18, 17, 11, 7, 11, 11, 5, 10, 5, 17, 17, 7, 11,
+	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11,
+}
+
 void LXI_B(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->reg.B = addr_src;
     state->reg.C = addr_dest;
@@ -67,33 +89,13 @@ void DCR(State8080* state, uint8_t *reg){
 
 }
 
-void INR_B(State8080* state){
-    uint8_t current_state = state->reg.B +1;
-    state->flag.zero = (current_state == 0);
-    state->flag.sign = (0x80 == (current_state & 0x80));    
-    state->flag.parity = __builtin_parity(current_state);
-    state->reg.B = current_state;
+void RLC(State8080* state){
+    state->flag.carry = ((state->reg.A & 0x80) == 0x80);
+    state->reg.A = (state->reg.A >> 7) | (state->reg.A <<1);
 }
 
-void INR_D(State8080* state){
-    uint8_t current_state = state->reg.D +1;
-    state->flag.zero = (current_state == 0);
-    state->flag.sign = (0x80 == (current_state & 0x80));    
-    state->flag.parity = __builtin_parity(current_state);
-    state->reg.D = current_state;
-}
-void INR_H(State8080* state){
-    uint8_t current_state = state->reg.H +1;
-    state->flag.zero = (current_state == 0);
-    state->flag.sign = (0x80 == (current_state & 0x80));    
-    state->flag.parity = __builtin_parity(current_state);
-    state->reg.D = current_state;
-}
-void INR_M(State8080* state){
-    uint8_t offset = (state->reg.H<<8) | state->reg.L;
-    state->flag.zero = (current_state == 0);
-    state->flag.sign = (0x80 == (current_state & 0x80));    
-    state->flag.parity = __builtin_parity(current_state);
-    state->memory[offset] += 1;
+void RAL(State8080* state){
+    state->reg.A = (state->reg.A << 1) | state->flag.carry;
 }
 
+void DAA(State8080* state){}

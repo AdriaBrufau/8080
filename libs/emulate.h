@@ -15,9 +15,10 @@ void INX_B(State8080* state);
 void INX_D(State8080* state);
 void INX_H(State8080* state);
 void INX_SP(State8080* state);
-void INR_B(State8080* state);
-void INR_D(State8080* state);
-void INR_H(State8080* state);
-void INR_M(State8080* state);
+void INR(State8080* state, uint8_t *reg);
+void DCR(State8080* state, uint8_t *reg);
+void RLC(State8080* state);
+void RAL(State8080* state);
+void DAA(State8080* state);
 
 #endif
