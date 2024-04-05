@@ -22,7 +22,7 @@ static int op_cycle[] = {
 	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11,
 	11, 10, 10, 18, 17, 11, 7, 11, 11, 5, 10, 5, 17, 17, 7, 11,
 	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11,
-}
+};
 
 void LXI_B(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->reg.B = addr_src;
@@ -95,7 +95,53 @@ void RLC(State8080* state){
 }
 
 void RAL(State8080* state){
+    state->flag.carry = ((state->reg.A & 0x80) == 0x80);
     state->reg.A = (state->reg.A << 1) | state->flag.carry;
 }
 
-void DAA(State8080* state){}
+void RAR(State8080* state){
+    state->flag.carry = ((state->reg.A & 0x80) == 0x80);
+    state->reg.A = (state->reg.A >> 1) | state->flag.carry;
+}
+
+void PUSH(State8080* state, uint8_t reg_data_1, uint8_t reg_data_2){
+    state->memory[state->stackpointer -2 ] = reg_data_2;
+    state->memory[state->stackpointer -1 ] = reg_data_1;
+    state->programpointer -= 2;
+}
+
+void PUSH_PSW(State8080* state){
+    uint8_t psw = (state->flag.sign            << 7)  |
+                  (state->flag.zero            << 6)  |
+                  (state->flag.auxiliary_carry << 4)  |
+                  (state->flag.parity          << 2)  |
+                   state->flag.carry                  ;
+    state->stackpointer -= 2;
+    state->memory[state->stackpointer] = state->reg.A;
+    state->memory[state->stackpointer + 1] = psw;
+}
+
+void POP(State8080* state, uint8_t reg_data_1, uint8_t reg_data_2){
+    state->memory[state->stackpointer + 2 ] = reg_data_2;
+    state->memory[state->stackpointer + 1 ] = reg_data_1;
+    state->programpointer += 2;
+}
+
+void POP_PSW(State8080* state){
+    uint8_t psw = (state->flag.sign            << 7)  |
+                  (state->flag.zero            << 6)  |
+                  (state->flag.auxiliary_carry << 4)  |
+                  (state->flag.parity          << 2)  |
+                   state->flag.carry                  ;
+    state->stackpointer += 2;
+    state->memory[state->stackpointer] = state->reg.A;
+    state->memory[state->stackpointer -1] = psw;
+}
+
+void DAD(State8080* state, uint16_t reg_data_1){
+    uint16_t reg_val = (uint16_t)((state->reg.H<<7) | state->reg.L);
+    uint16_t total = reg_data_1 + reg_val;
+    state->reg.H = (total >> 8) & 0xff;
+    state->reg.L = total & 0xff;
+    state->flag.carry = ((total & 0x80) == 0x80);
+}
