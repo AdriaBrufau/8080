@@ -27,24 +27,20 @@ static int op_cycle[] = {
 void LXI_B(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->reg.B = addr_src;
     state->reg.C = addr_dest;
-    state->programpointer += 2; 
 }
 
 void LXI_D(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->reg.D = addr_src;
     state->reg.E = addr_dest;
-    state->programpointer += 2; 
 }
 
 void LXI_H(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->reg.H = addr_src;
     state->reg.L = addr_dest;
-    state->programpointer += 2; 
 }
 
 void LXI_SP(State8080* state, uint8_t addr_src, uint8_t addr_dest){
     state->stackpointer = (addr_src << 8) | addr_dest;
-    state->programpointer += 2;
 }
 
 void STAX_B(State8080* state, uint8_t memoryB, uint8_t memoryC){
@@ -89,6 +85,11 @@ void DCR(State8080* state, uint8_t *reg){
 
 }
 
+void DCX(State8080* state, uint8_t* reg_1, uint8_t* reg_2){
+    *reg_1 -= 1;
+    *reg_2 -= 1;
+}
+
 void RLC(State8080* state){
     state->flag.carry = ((state->reg.A & 0x80) == 0x80);
     state->reg.A = (state->reg.A >> 7) | (state->reg.A <<1);
@@ -118,13 +119,12 @@ void PUSH_PSW(State8080* state){
                    state->flag.carry                  ;
     state->stackpointer -= 2;
     state->memory[state->stackpointer] = state->reg.A;
-    state->memory[state->stackpointer + 1] = psw;
+    state->memory[state->stackpointer++] = psw;
 }
 
 void POP(State8080* state, uint8_t reg_data_1, uint8_t reg_data_2){
     state->memory[state->stackpointer + 2 ] = reg_data_2;
     state->memory[state->stackpointer + 1 ] = reg_data_1;
-    state->programpointer += 2;
 }
 
 void POP_PSW(State8080* state){
@@ -144,4 +144,58 @@ void DAD(State8080* state, uint16_t reg_data_1){
     state->reg.H = (total >> 8) & 0xff;
     state->reg.L = total & 0xff;
     state->flag.carry = ((total & 0x80) == 0x80);
+}
+
+void XCHG(State8080* state){
+    state->reg.H = state->reg.D;
+    state->reg.L = state->reg.E;
+}
+
+void XTHL(State8080* state){
+    state->reg.L = state->memory[state->stackpointer];
+    state->reg.H = state->memory[state->stackpointer++];
+}
+
+void ADI(State8080* state, uint8_t reg_1){
+    uint16_t result = (uint16_t)(state->reg.A + reg_1);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+    state->reg.A = (uint8_t)result;
+}
+void ACI(State8080* state, uint8_t reg){
+    uint16_t result = (uint16_t)(state->reg.A + reg + state->flag.carry);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+    state->reg.A = (uint8_t)result;
+}
+
+void SBI(State8080* state, uint8_t reg_1){
+    uint16_t result = (uint16_t)(state->reg.A - reg_1);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+    state->reg.A = (uint8_t)result;
+}
+
+void ANI(State8080* state, uint8_t reg){
+    uint16_t result = (uint16_t)(state->reg.A & reg);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+    state->reg.A = (uint8_t)result;
+}
+
+void XRA(State8080* state, uint8_t reg){
+    uint16_t result = (uint16_t)(reg ^ state->reg.A);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+    state->reg.A = (uint8_t)result;
 }
