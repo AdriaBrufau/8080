@@ -168,7 +168,7 @@ void ACI(State8080* state, uint8_t reg){
     uint16_t result = (uint16_t)(state->reg.A + reg + state->flag.carry);
     state->flag.zero = (uint8_t)result == 0;
     state->flag.sign = (uint8_t)(result & 0x80);    
-    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.pCarity = __builtin_parity((uint8_t)result);
     state->flag.carry = result >> 0xff;
     state->reg.A = (uint8_t)result;
 }
@@ -198,4 +198,44 @@ void XRA(State8080* state, uint8_t reg){
     state->flag.parity = __builtin_parity((uint8_t)result);
     state->flag.carry = result >> 0xff;
     state->reg.A = (uint8_t)result;
+}
+
+
+void ORI(State8080* state, uint8_t reg){
+    uint16_t result = (uint16_t)(reg | state->reg.A);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+    state->reg.A = (uint8_t)result;
+}
+
+void CPI(State8080* state, uint8_t reg){
+    uint16_t result = (uint16_t)(state->reg.A - reg);
+    state->flag.zero = (uint8_t)result == 0;
+    state->flag.sign = (uint8_t)(result & 0x80);    
+    state->flag.parity = __builtin_parity((uint8_t)result);
+    state->flag.carry = result >> 0xff;
+}
+
+void STA(State8080* state, uint8_t pos, uint8_t reg){
+    uint16_t position = (pos << 8) | reg;
+    state->memory[position] = state->reg.A;
+}
+
+void LDA(State8080* state, uint8_t pos, uint8_t reg){
+    uint16_t position = (pos << 8) | reg;
+    state->reg.A = state->memory[position]; 
+}
+
+void SHLD(State8080* state, uint8_t low, uint8_t high){
+    uint16_t position = (low << 8) | high;
+    state->memory[position] =state->reg.L;
+    state->memory(position++] = state->reg.H ;
+}
+
+void LHLD(State8080* state, uint8_t low, uint8_t high){
+    uint16_t position = (low << 8 ) | high;
+    state->reg.L = state->memory[position] ;
+    state->reg.H = state->memory(position++]  ;
 }

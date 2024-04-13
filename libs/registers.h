@@ -31,5 +31,7 @@ typedef struct State8080{
     uint8_t *memory;
 } State8080;
 
+
+void emulate8080(State8080* state, int pc);
 #endif
 

@@ -33,5 +33,11 @@ void ACI(State8080* state, uint8_t reg);
 void SBI(State8080* state, uint8_t reg);
 void ANI(State8080* state, uint8_t reg);
 void XRI(State8080* state, uint8_t reg);
+void ORI(State8080* state, uint8_t reg);
+void CPI(State8080* state, uint8_t reg);
+void STA(State8080* state, uint8_t low, uint8_t high);
+void LDA(State8080* state, uint8_t low, uint8_t high);
+void SHLD(State8080* state, uint8_t low, uint8_t high);
+void LHLD(State8080* state, uint8_t low, uint8_t highg);
 
 #endif
