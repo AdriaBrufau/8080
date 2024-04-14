@@ -68,6 +68,32 @@ void INX_H(State8080* state){
 void INX_SP(State8080* state){
     state->stackpointer++;
 }
+
+void CMA(State8080* state){
+    state->reg.A = ~(state->reg.A); 
+}
+
+void DAA(State8080* state){
+    uint8_t low = (state->reg.A >> 4);
+    uint8_t high = (state->reg.A & 0xf) >> 4;
+    if(low > 0x9 || state->flag.auxiliary_carry == 1){
+        low += 0x6;
+        state->reg.A += 0x6;
+        state->flag.auxiliary_carry = (low > 0x9);
+        state->flag.zero = (state->reg.A == 0);
+        state->flag.sign = (0x80 == (state->reg.A & 0x80));    
+        state->flag.parity = __builtin_parity(state->reg.A);
+    }
+    if(high > 0x9 || state->flag.auxiliary_carry == 1){
+        high += 0x6;
+        state->flag.auxiliary_carry = (high > 0x9);
+        state->flag.zero = (state->reg.A == 0);
+        state->flag.sign = (0x80 == (state->reg.A & 0x80));    
+        state->flag.parity = __builtin_parity(state->reg.A);
+    }
+}
+
+
 void INR(State8080* state, uint8_t *reg){
     uint16_t result = (uint16_t)* reg + 1;
     state->flag.zero = (result == 0);
@@ -238,4 +264,22 @@ void LHLD(State8080* state, uint8_t low, uint8_t high){
     uint16_t position = (low << 8 ) | high;
     state->reg.L = state->memory[position] ;
     state->reg.H = state->memory(position++]  ;
+}
+
+void PCHL(State8080* state){
+    uint8_t position = (state->reg.H << 8) | state->reg.L;
+    state->programpointer = state->memory[position];
+}
+
+void JMP(State8080* state, uint8_t low, uint8_t high){
+    uint8_t position = (high << 8) | low;
+    state->programpointer = state->memomry[position];
+}
+
+void CALL(State8080* state, uint8_t low, uint8_t high){
+    uint16_t next_stack_pos = state->stackpointer+2;
+    state->memory[state->stackpointer-1] = (next_stack_pos >>8) & 0xff;
+    state->memory[state->stackpointer-2] = next_stack_pos & 0xff;
+    state->stackpointer = state->stackpointer - 2;
+    state->programpointer = (high << 8) | low;
 }

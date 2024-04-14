@@ -15,6 +15,8 @@ void INX_B(State8080* state);
 void INX_D(State8080* state);
 void INX_H(State8080* state);
 void INX_SP(State8080* state);
+void MOV(State8080* state, uint8_t dest, uint8_t src);
+void DAA(State8080* state);
 void INR(State8080* state, uint8_t *reg);
 void DCR(State8080* state, uint8_t *reg);
 void DCX(State8080* state, uint8_t* reg_1, uint8_t* reg_2);
@@ -38,6 +40,8 @@ void CPI(State8080* state, uint8_t reg);
 void STA(State8080* state, uint8_t low, uint8_t high);
 void LDA(State8080* state, uint8_t low, uint8_t high);
 void SHLD(State8080* state, uint8_t low, uint8_t high);
-void LHLD(State8080* state, uint8_t low, uint8_t highg);
-
+void LHLD(State8080* state, uint8_t low, uint8_t high);
+void PCHL(State8080* state);
+void JMP(State8080* state, uint8_t low, uint8_t high);
+void CALL(State8080* state, uint8_t low, uint8_t high);
 #endif
